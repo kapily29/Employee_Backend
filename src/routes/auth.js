@@ -1,16 +1,32 @@
+// routes/auth.js
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import Admin from '../models/Admin.js'; // Make sure this exists
 
 const router = Router();
 
-// Fixed admin credentials from env
-router.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  if (username === process.env.ADMIN_USER && password === process.env.ADMIN_PASS) {
+// POST /api/auth/login
+router.post('/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Find admin in database
+    const admin = await Admin.findOne({ username });
+    if (!admin) return res.status(401).json({ error: 'Invalid credentials' });
+
+    // Compare hashed password
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+
+    // Create JWT
     const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '12h' });
-    return res.json({ token });
+
+    res.json({ token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
   }
-  return res.status(401).json({ error: 'Invalid credentials' });
 });
 
 export default router;
