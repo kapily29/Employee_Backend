@@ -13,7 +13,7 @@ router.post('/', adminOnly, async (req, res, next) => {
 });
 
 // Read all (admin)
-router.get('/', adminOnly, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
     const list = await Notice.find().sort({ pinned: -1, createdAt: -1 });
     res.json(list);

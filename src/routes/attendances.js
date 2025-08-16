@@ -17,7 +17,7 @@ router.post('/', adminOnly, async (req, res, next) => {
 });
 
 // Read all (admin) with filters
-router.get('/', adminOnly, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
     const { date, employee } = req.query;
     const q = {};

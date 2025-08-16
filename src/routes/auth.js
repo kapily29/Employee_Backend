@@ -2,7 +2,6 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import Admin from '../models/Admin.js'; // Make sure this exists
 
 const router = Router();
 
