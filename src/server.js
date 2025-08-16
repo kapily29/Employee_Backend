@@ -3,7 +3,6 @@ import cors from 'cors';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import bcrypt from 'bcryptjs';
 dotenv.config();
 
 import authRoutes from './routes/auth.js';
@@ -11,7 +10,6 @@ import employeeRoutes from './routes/employees.js';
 import attendanceRoutes from './routes/attendances.js';
 import noticeRoutes from './routes/notices.js';
 import publicRoutes from './routes/public.js';
-import Admin from './models/Admin.js';
 
 const app = express();
 app.use(cors());
@@ -33,25 +31,6 @@ mongoose.connect(MONGODB_URI).then(() => {
   process.exit(1);
 });
 
-app.post('/api/admin/create-first', async (req, res) => {
-  try {
-    const existing = await Admin.findOne();
-    if (existing) return res.status(400).json({ msg: "Admin already exists" });
-
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-    const admin = new Admin({
-      username: req.body.username,
-      password: hashedPassword
-    });
-
-    await admin.save(); 
-    res.json({ msg: "First admin created successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-});
 
 app.get('/api/health', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
