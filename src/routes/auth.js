@@ -1,7 +1,7 @@
-// routes/auth.js
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import Admin from '../models/Admin.js'; // ✅ import model
 
 const router = Router();
 
@@ -19,9 +19,13 @@ router.post('/login', async (req, res) => {
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
     // Create JWT
-    const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '12h' });
+    const token = jwt.sign(
+      { id: admin._id, username: admin.username, role: 'admin' }, // ✅ include id + role
+      process.env.JWT_SECRET,
+      { expiresIn: '12h' }
+    );
 
-    res.json({ token });
+    res.json({ token }); // ✅ must return token for frontend
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
